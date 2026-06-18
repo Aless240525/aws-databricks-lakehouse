@@ -1,0 +1,47 @@
+name: "Despliegue Lakehouse Databricks-AWS"
+
+# El pipeline se ejecutará automáticamente cuando hagas un push a la rama 'main'
+# o de forma manual desde la interfaz de GitHub (workflow_dispatch)
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: "Construccion Infraestructura"
+    runs-on: ubuntu-latest
+    
+    # Inyectamos los secretos de GitHub como variables de entorno.
+    # Terraform y los providers (AWS/Databricks) las leerán automáticamente.
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DATABRICKS_USERNAME: ${{ secrets.DATABRICKS_USERNAME }}
+      DATABRICKS_PASSWORD: ${{ secrets.DATABRICKS_PASSWORD }}
+      # Pasamos el Account ID a la variable que declaraste en variables.tf
+      TF_VAR_databricks_account_id: ${{ secrets.DATABRICKS_ACCOUNT_ID }}
+
+    steps:
+      - name: 1. Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: 2. Instalar Terraform en el servidor de GitHub
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ">= 1.5.0"
+
+      - name: 3. Terraform Init (Descargar plugins)
+        run: terraform init
+
+      - name: 4. Terraform Validate (Revisar sintaxis)
+        run: terraform validate
+
+      - name: 5. Terraform Plan (Simular cambios)
+        run: terraform plan
+
+      - name: 6. Terraform Apply (Desplegar en AWS)
+        # Solo ejecuta el apply si estamos en la rama principal
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
