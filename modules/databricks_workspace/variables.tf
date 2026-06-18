@@ -37,3 +37,8 @@ variable "tags" {
   description = "Etiquetas base"
   type        = map(string)
 }
+
+variable "databricks_account_id" {
+  description = "ID de la cuenta de Databricks"
+  type        = string
+}

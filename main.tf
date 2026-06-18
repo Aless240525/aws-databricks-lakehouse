@@ -59,6 +59,7 @@ module "databricks_workspace" {
   private_subnet_ids     = module.vpc.private_subnets
   security_group_id      = module.vpc.security_group_id
   tags                   = local.tags
+  databricks_account_id  = var.databricks_account_id
 }
 
 output "databricks_url" {
