@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
+}
+
 # 1. Registrar las credenciales IAM en Databricks
 # Le decimos a la plataforma de Databricks que este rol existe en tu AWS
 resource "databricks_mws_credentials" "this" {

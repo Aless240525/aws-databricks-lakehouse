@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
+}
+
 # 1. Política de Confianza (Trust Policy)
 # Le decimos a AWS: "Confía en la cuenta principal de Databricks, pero SOLO si presentan mi ID de cuenta de Databricks"
 data "aws_iam_policy_document" "cross_account_trust" {
